@@ -112,7 +112,7 @@ export const sendVerifyOTP = async (req, res) => {
             from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: "Verification OTP",
-            text: `Your OTP for verifying your account ${OTP}`
+            text: `Your OTP for verifying your account ${OTP}.`
         }
 
         await transporter.sendMail(mailOptions)
@@ -150,3 +150,66 @@ export const verifyAccount = async (req, res) => {
         return res.json({success: false, message: err.message})
     }
 }
+
+export const sendResetOTP = async (req, res) => {
+    try{
+        const {userId} = req
+        const user = await userModel.findById(userId)
+
+        const OTP = String(Math.floor(100000 + Math.random() * 900000))
+        user.resetOtp = OTP
+        user.resetOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000
+
+        await user.save()
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: "Password Reset",
+            text: `Your OTP for password reset ${OTP}.`
+        }
+
+        transporter.sendMail(mailOptions)
+        return res.json({success: true, message: "Reset OTP sent successfully into your email!"})
+    }catch(err){
+        return res.json({success: false, message: err.message})
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try{
+        const user = await userModel.findById(req.userId)
+        const { password, OTP } = req.body
+
+        if(!user){
+            return res.json({success: false, message: "User is not logged in!"})
+        }
+
+        if(user.resetOtp !== OTP || user.resetOtp === ""){
+            return res.json({success: false, message:"Invalid credentials!"})
+        }
+
+        if(Date.now() > user.resetOtpExpireAt){
+            return res.json({success: false, message:"Your OTP has expired!"})
+        }
+
+        const passwd = await bcrypt.hash(password, 10)
+        user.password = passwd
+        user.resetOtp = ""
+        user.resetOtpExpireAt = 0
+
+        await user.save()
+        return res.json({success: true, message: "Your password has been reset successfully!"})
+
+    }catch(err){
+        return res.json({success: false, message: err.message})
+    }
+}
+
+export const isAuthenticated = (req, res) => {
+    try{
+        return res.json({success: true, message: `User ${req.userId} is authenticated successfully!`})
+    }catch(err){
+        return res.json({success: false, message: err.message})
+    }
+}
+
