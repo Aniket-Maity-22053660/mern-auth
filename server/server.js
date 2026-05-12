@@ -5,10 +5,12 @@ import cookieParser from "cookie-parser"
 import connectDB from "./config/mongodb.js"
 import authRouter from "./routes/authRoutes.js"
 
-const app = express()
-const port = process.env.PORT | 4000
-
 dotenv.config()
+
+const app = express()
+const port = process.env.PORT || 4000
+
+
 
 app.use(express.json())
 app.use(cookieParser())
