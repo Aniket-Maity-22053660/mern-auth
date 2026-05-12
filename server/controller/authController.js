@@ -86,7 +86,7 @@ export const logout = async (req, res) => {
             maxAge: 4000
         })
 
-        return res.json({success:true, message: "User logged out successfully!"})
+        return res.json({success:true, message: `User ${req.userId} logged out successfully!`})
     }catch(err){
         console.log(err)
         return res.json({success: false, message: err.message})

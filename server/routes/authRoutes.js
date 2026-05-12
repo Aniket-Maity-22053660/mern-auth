@@ -6,7 +6,7 @@ const authRouter = express.Router()
 
 authRouter.post("/register", register)
 authRouter.post("/login", login)
-authRouter.get("/logout", logout)
+authRouter.get("/logout", userAuth, logout)
 authRouter.get("/send-OTP", userAuth, sendVerifyOTP)
 authRouter.post("/verify-account", userAuth, verifyAccount)
 authRouter.get("/send-reset-OTP", userAuth, sendResetOTP)
