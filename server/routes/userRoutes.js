@@ -4,6 +4,6 @@ import userAuth from "../middleware/userAuth.js"
 
 const userRouter = express.Router()
 
-userRouter.get("/data", userAuth, userData)
+userRouter.route("/data").get(userAuth, userData)
 
 export default userRouter

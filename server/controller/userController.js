@@ -11,7 +11,7 @@ export const userData = async (req, res) => {
             return res.json({success: false, message: "User is not registered!"})
         }
 
-         const data = {
+        const data = {
             name: user.name,
             isAccountVerified: user.isAccountVerified
         }
